@@ -1,6 +1,3 @@
-## Note: Rename this file to 1_5v5_Generator.py and move it to a 'pages' folder
-## to enable the multi-page feature.
-
 import matplotlib
 import matplotlib.pyplot as plt
 # Set non-interactive backend BEFORE importing pyplot or using it
@@ -337,7 +334,7 @@ with tab2:
 
 st.divider()
 st.subheader("Player Participation Summary")
-st.caption("Total periods played (out of 8) based on the current rotation and manual swaps.")
+st.caption("Total periods played based on the current rotation (Field players count per block; GKs count as 1 per quarter).")
 
 # Prepare and sort data for the table
 summary_data = [{"Player": p, "Periods Played": participation[p]} for p in attending]

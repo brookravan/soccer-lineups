@@ -1,6 +1,3 @@
-## Note: Rename this file to 2_7v7_Generator.py and move it to a 'pages' folder
-## to enable the multi-page feature.
-
 import matplotlib
 import matplotlib.pyplot as plt
 # Set non-interactive backend BEFORE importing pyplot or using it
@@ -46,8 +43,8 @@ st.set_page_config(page_title="Soccer Lineup Generator", layout="wide")
 # --- APP STATE INITIALIZATION ---
 if 'seed' not in st.session_state:
     st.session_state.seed = random.randint(1000, 9999)
-if 'manual_swaps' not in st.session_state:
-    st.session_state.manual_swaps = []
+if 'manual_swaps_7v7' not in st.session_state:
+    st.session_state.manual_swaps_7v7 = []
 
 # --- SIDEBAR CONFIGURATION ---
 st.sidebar.header("Team Configuration")
@@ -62,7 +59,7 @@ roster = [p.strip() for p in roster_raw.split(",") if p.strip()]
 
 if st.sidebar.button("Generate New Random Rotation"):
     st.session_state.seed = random.randint(1000, 9999)
-    st.session_state.manual_swaps = []
+    st.session_state.manual_swaps_7v7 = []
 
 team_name = st.sidebar.text_input("Team Name", st.session_state.get('team_name', "Your Team"), key='team_name')
 opponent = st.sidebar.text_input("Opponent", st.session_state.get('opponent', "Opponent"), key='opponent')
@@ -258,13 +255,13 @@ with st.expander("Manual Swaps"):
     with col4: p2 = st.selectbox("Player 2", attending, key="p2")
     
     if st.button("Swap Players"):
-        st.session_state.manual_swaps.append({'q': q_swap, 'b': b_swap, 'p1': p1, 'p2': p2})
+        st.session_state.manual_swaps_7v7.append({'q': q_swap, 'b': b_swap, 'p1': p1, 'p2': p2})
 
     if st.button("Reset All Swaps"):
-        st.session_state.manual_swaps = []
+        st.session_state.manual_swaps_7v7 = []
 
 # Apply manual swaps
-for swap in st.session_state.manual_swaps:
+for swap in st.session_state.manual_swaps_7v7:
     idx = (swap['q']-1)*4 + (swap['b']-1)
     l = lineups[idx]
     pos_fields = ['GK'] + FORMATION_CONFIGS[formation_choice]['slots']

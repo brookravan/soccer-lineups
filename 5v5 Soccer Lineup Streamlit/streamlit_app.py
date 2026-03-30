@@ -334,7 +334,7 @@ with tab2:
 
 st.divider()
 st.subheader("Player Participation Summary")
-st.caption("Total periods played (out of 8) based on the current rotation and manual swaps.")
+st.caption("Total periods played based on the current rotation (Field players count per block; GKs count as 1 per quarter).")
 
 # Prepare and sort data for the table
 summary_data = [{"Player": p, "Periods Played": participation[p]} for p in attending]
