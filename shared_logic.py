@@ -29,9 +29,16 @@ APP_CSS = """
         color: #f0fdf4;
     }
     section[data-testid="stSidebar"] input,
-    section[data-testid="stSidebar"] textarea {
-        color: #0f172a !important;
+    section[data-testid="stSidebar"] textarea,
+    section[data-testid="stSidebar"] [data-baseweb="input"],
+    section[data-testid="stSidebar"] [data-baseweb="base-input"] {
         background-color: rgba(255, 255, 255, 0.9) !important;
+    }
+    section[data-testid="stSidebar"] input,
+    section[data-testid="stSidebar"] textarea,
+    section[data-testid="stSidebar"] [data-baseweb="input"] *,
+    section[data-testid="stSidebar"] [data-baseweb="base-input"] * {
+        color: #0f172a !important;
     }
     div.stButton > button:first-child {
         background-color: #166534;
