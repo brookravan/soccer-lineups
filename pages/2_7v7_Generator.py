@@ -185,14 +185,16 @@ def generate_rotation(attending, quarterly_gks, player_ranks, split_pairs, syner
         candidates = [p for p in attending if p != gk]
         
         # Prioritization:
-        # 1. Must stay (consecutive < 10)
-        # 2. Must enter (bench >= 10)
-        # 3. Field time tie-breaker: prioritize lower field minutes.
-        #    GKs get an 8-min virtual penalty to reduce their field time by ~5-10 mins.
+        # 1. Must stay (consecutive < 10) - Ensures players finish 10m blocks.
+        # 2. Must enter (bench >= 10) - Prioritizes players who have sat long enough.
+        # 3. Field minutes balance: strictly prioritize players with the fewest field minutes.
+        #    GKs get a 6-min virtual penalty to ensure they trail non-GKs by ~5 mins.
+        # 4. Bench time tie-breaker: prioritize those who have been off the longest.
         candidates.sort(key=lambda p: (
             con_active_mins[p] > 0 and con_active_mins[p] < 10,
             con_bench_mins[p] >= 10,
-            - (field_mins_internal[p] + (8 if p in is_gk_anytime else 0))
+            - (field_mins_internal[p] + (6 if p in is_gk_anytime else 0)),
+            con_bench_mins[p]
         ), reverse=True)
 
         selected = []
