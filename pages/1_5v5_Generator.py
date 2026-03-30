@@ -139,15 +139,19 @@ def generate_rotation(attending, quarterly_gks, player_ranks, split_pairs, syner
     sat_last = {p: False for p in attending}
     total_played = {p: 0 for p in attending}
     hp_played = {p: 0 for p in attending}
+    # Mirrors the display participation table: GK counts once per quarter (not per block),
+    # field players count once per block. Used as the sort key so the selection algorithm
+    # prioritizes players who are genuinely behind on visible participation credit.
+    part_score = {p: 0 for p in attending}
     
     for q in range(4):
         gk = quarterly_gks[q]
         for b in range(2):
             is_hp = (b == 0)
             candidates = [p for p in attending if p != gk]
-            # Primary sort: fewest periods played first (equal time is top priority).
+            # Primary sort: fewest participation credits first (mirrors the display table).
             # sat_last is a tiebreaker so recently-rested players break ties fairly.
-            candidates.sort(key=lambda p: (total_played[p], not sat_last[p], con_played[p] >= 2))
+            candidates.sort(key=lambda p: (part_score[p], not sat_last[p], con_played[p] >= 2))
             selected = []
             for p in candidates:
                 if len(selected) < 4 and p not in selected:
@@ -188,6 +192,12 @@ def generate_rotation(attending, quarterly_gks, player_ranks, split_pairs, syner
                     if is_hp: hp_played[p] += 1
                     con_played[p] = 1 if p == gk else con_played[p] + 1
                     sat_last[p] = False
+                    # GK earns 1 credit for the whole quarter (first block only);
+                    # field players earn 1 credit per block.
+                    if p == gk:
+                        if is_hp: part_score[p] += 1
+                    else:
+                        part_score[p] += 1
                 else:
                     con_played[p] = 0
                     sat_last[p] = True
