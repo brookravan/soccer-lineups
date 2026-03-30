@@ -47,9 +47,9 @@ APP_CSS = """
     section[data-testid="stSidebar"] .stDownloadButton button,
     section[data-testid="stSidebar"] [data-testid="stDownloadButton"] button,
     section[data-testid="stSidebar"] [data-testid="stDownloadButton"] a {
-        color: #166534 !important;
-        background-color: #ffffff !important;
-        border: 1px solid #166534 !important;
+        color: white !important;
+        background-color: #166534 !important;
+        border: none !important;
     }
     div.stButton > button:first-child {
         background-color: #166534;
