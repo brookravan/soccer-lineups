@@ -1,0 +1,8 @@
+# Ignore everything by default
+*
+
+# Keep only the necessary files for the Streamlit app
+!streamlit_app.py
+!requirements.txt
+!lineup_config.json
+!.gitignore
