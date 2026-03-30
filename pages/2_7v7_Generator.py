@@ -219,6 +219,10 @@ def generate_rotation(attending, quarterly_gks, player_ranks, split_pairs, syner
                     if p in pair and any(partner in selected for partner in pair if partner != p):
                         split_clash = True
                 
+                # Prioritize timing: Allow split clash if player is behind on total minutes
+                if split_clash and total_mins[p] < max(total_mins.values()):
+                    split_clash = False
+                
                 if not split_clash:
                     selected.append(p)
                     for pair in synergy_pairs:
