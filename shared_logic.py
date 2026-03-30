@@ -20,10 +20,18 @@ import io
 APP_CSS = """
     <style>
     .stApp {
-        background-color: #f8fafc;
+        background-color: #edf2ed;
     }
     section[data-testid="stSidebar"] {
-        background-color: #f1f5f9;
+        background-color: #1e4d35;
+    }
+    section[data-testid="stSidebar"] * {
+        color: #f0fdf4;
+    }
+    section[data-testid="stSidebar"] input,
+    section[data-testid="stSidebar"] textarea {
+        color: #0f172a !important;
+        background-color: rgba(255, 255, 255, 0.9) !important;
     }
     div.stButton > button:first-child {
         background-color: #166534;

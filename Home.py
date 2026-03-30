@@ -9,10 +9,13 @@ st.set_page_config(
 st.markdown("""
     <style>
     .stApp {
-        background-color: #f8fafc;
+        background-color: #edf2ed;
     }
     section[data-testid="stSidebar"] {
-        background-color: #f1f5f9;
+        background-color: #1e4d35;
+    }
+    section[data-testid="stSidebar"] * {
+        color: #f0fdf4;
     }
     .main .block-container {
         padding-top: 2rem;
