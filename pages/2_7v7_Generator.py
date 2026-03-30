@@ -388,7 +388,9 @@ summary_data = [{
 } for p in attending]
 summary_data.sort(key=lambda x: x["Total"], reverse=True)
 
-st.table(summary_data)
+col_l, col_m, col_r = st.columns([1, 2, 1])
+with col_m:
+    st.table(summary_data)
 
 # Subtle footer to track version/sync time
 last_sync = datetime.fromtimestamp(os.path.getmtime(__file__)).strftime("%Y-%m-%d %H:%M:%S")

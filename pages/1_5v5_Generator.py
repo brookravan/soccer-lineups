@@ -180,8 +180,6 @@ def generate_rotation(attending, quarterly_gks, player_ranks, split_pairs, syner
                             partner = pair[0] if p == pair[1] else pair[1]
                             if partner in selected: split_clash = True
                     
-                    if sat_last[p] or total_played[p] < max(total_played.values()): split_clash = False
-                    
                     if can_play and not split_clash: 
                         selected.append(p)
                         # Synergy check
@@ -347,7 +345,9 @@ st.caption("Total periods played based on the current rotation (Field players co
 summary_data = [{"Player": p, "Periods Played": participation[p]} for p in attending]
 summary_data.sort(key=lambda x: x["Periods Played"], reverse=True)
 
-st.table(summary_data)
+col_l, col_m, col_r = st.columns([1, 2, 1])
+with col_m:
+    st.table(summary_data)
 
 # Subtle footer to track version/sync time
 last_sync = datetime.fromtimestamp(os.path.getmtime(__file__)).strftime("%Y-%m-%d %H:%M:%S")
