@@ -55,16 +55,17 @@ st.sidebar.header("Team Configuration")
 st.sidebar.header("Configuration Portability")
 uploaded_config = st.sidebar.file_uploader("Upload saved config (.json)", type="json")
 if uploaded_config is not None:
-    config_data = json.load(uploaded_config)
-    for key, value in config_data.items():
-        st.session_state[key] = value
-    # Pre-calculate roster from the loaded/existing roster_raw to handle attendance checkboxes
-    current_roster_raw = st.session_state.get('roster_raw', "")
-    temp_roster = [p.strip() for p in current_roster_raw.split(",") if p.strip()]
-    if "attending" in config_data:
-        for p in temp_roster:
-            st.session_state[f'attend_{p}'] = p in config_data["attending"]
-    st.success("Configuration loaded!")
+    if st.sidebar.button("Apply Loaded Configuration"):
+        config_data = json.load(uploaded_config)
+        for key, value in config_data.items():
+            st.session_state[key] = value
+        # Pre-calculate roster from the loaded/existing roster_raw to handle attendance checkboxes
+        current_roster_raw = st.session_state.get('roster_raw', "")
+        temp_roster = [p.strip() for p in current_roster_raw.split(",") if p.strip()]
+        if "attending" in config_data:
+            for p in temp_roster:
+                st.session_state[f'attend_{p}'] = p in config_data["attending"]
+        st.success("Configuration applied!")
 
 roster_raw = st.sidebar.text_area("Roster (comma separated)", st.session_state.get('roster_raw', "P1, P2, P3, P4, P5, P6, P7, P8, P9, P10, P11, P12"), key='roster_raw')
 roster = [p.strip() for p in roster_raw.split(",") if p.strip()]
