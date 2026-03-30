@@ -177,22 +177,22 @@ def generate_rotation(attending, quarterly_gks, player_ranks, split_pairs, syner
     lineups = []
     con_active_mins = {p: 0 for p in attending}
     con_bench_mins = {p: 0 for p in attending}
-    total_mins = {p: 0 for p in attending}
-    hp_played = {p: 0 for p in attending}
+    field_mins_internal = {p: 0 for p in attending}
+    is_gk_anytime = set(quarterly_gks)
     
     for i, duration in enumerate(durations):
         gk = quarterly_gks[i // 2]
-        is_hp = (i % 2 == 0)
         candidates = [p for p in attending if p != gk]
         
         # Prioritization:
         # 1. Must stay (consecutive < 10)
         # 2. Must enter (bench >= 10)
-        # 3. Avoid must exit (consecutive >= 15)
+        # 3. Field time tie-breaker: prioritize lower field minutes.
+        #    GKs get an 8-min virtual penalty to reduce their field time by ~5-10 mins.
         candidates.sort(key=lambda p: (
             con_active_mins[p] > 0 and con_active_mins[p] < 10,
             con_bench_mins[p] >= 10,
-            total_mins[p]
+            - (field_mins_internal[p] + (8 if p in is_gk_anytime else 0))
         ), reverse=True)
 
         selected = []
@@ -232,10 +232,10 @@ def generate_rotation(attending, quarterly_gks, player_ranks, split_pairs, syner
 
         for p in attending:
             if p in active:
-                total_mins[p] += duration
-                if is_hp: hp_played[p] += 1
                 con_active_mins[p] += duration
                 con_bench_mins[p] = 0
+                if p != gk:
+                    field_mins_internal[p] += duration
             else:
                 con_bench_mins[p] += duration
                 con_active_mins[p] = 0
