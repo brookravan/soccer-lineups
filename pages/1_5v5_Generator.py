@@ -30,6 +30,8 @@ if 'seed' not in st.session_state:
     st.session_state.seed = random.randint(1000, 9999)
 if 'manual_swaps' not in st.session_state:
     st.session_state.manual_swaps = []
+if 'manual_swaps_5v5' not in st.session_state:
+    st.session_state.manual_swaps_5v5 = []
 
 # --- SIDEBAR CONFIGURATION ---
 st.sidebar.header("Team Configuration")
@@ -45,6 +47,7 @@ roster = [p.strip() for p in roster_raw.split(",") if p.strip()]
 if st.sidebar.button("Generate New Random Rotation"):
     st.session_state.seed = random.randint(1000, 9999)
     st.session_state.manual_swaps = []
+    st.session_state.manual_swaps_5v5 = []
 
 team_name = st.sidebar.text_input("Team Name", st.session_state.get('team_name', "Your Team"), key='team_name')
 opponent = st.sidebar.text_input("Opponent", st.session_state.get('opponent', "Opponent"), key='opponent')
@@ -228,12 +231,15 @@ with st.expander("Manual Swaps"):
     
     if st.button("Swap Players"):
         st.session_state.manual_swaps.append({'q': q_swap, 'b': b_swap, 'p1': p1, 'p2': p2})
+        st.session_state.manual_swaps_5v5.append({'q': q_swap, 'b': b_swap, 'p1': p1, 'p2': p2})
 
     if st.button("Reset All Swaps"):
         st.session_state.manual_swaps = []
+        st.session_state.manual_swaps_5v5 = []
 
 # Apply manual swaps
 for swap in st.session_state.manual_swaps:
+for swap in st.session_state.manual_swaps_5v5:
     idx = (swap['q']-1)*2 + (swap['b']-1)
     l = lineups[idx]
     pos_fields = ['GK'] + FORMATION_CONFIGS[formation_choice]['slots']
@@ -268,6 +274,12 @@ for i, l in enumerate(lineups):
         for p in active: hp_stats[p] += 1
     for p in attending:
         if p in active: participation[p] += 1
+        # Goalkeeper counts as 1 period for the entire quarter (2 blocks)
+        participation[l['GK']] += 1
+
+    # Field players count as 1 period per block
+    for slot in FORMATION_CONFIGS[formation_choice]['slots']:
+        participation[l[slot]] += 1
 
 # --- PLOTTING FUNCTION ---
 def create_plot(layout_type, lineups, participation, hp_stats, team_name, opponent, formation_key, seed):
