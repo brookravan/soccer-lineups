@@ -27,6 +27,31 @@ FORMATION_CONFIGS = {
 
 st.set_page_config(page_title="Soccer Lineup Generator", layout="wide")
 
+st.markdown("""
+    <style>
+    .stApp {
+        background-color: #f8fafc;
+    }
+    section[data-testid="stSidebar"] {
+        background-color: #f1f5f9;
+    }
+    div.stButton > button:first-child {
+        background-color: #166534;
+        color: white;
+        border: none;
+    }
+    thead tr th {
+        background-color: #166534 !important;
+        color: white !important;
+    }
+    .stDownloadButton > button {
+        background-color: #ffffff;
+        border: 1px solid #166534 !important;
+        color: #166534 !important;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
 # --- APP STATE INITIALIZATION ---
 if 'seed' not in st.session_state:
     st.session_state.seed = random.randint(1000, 9999)
