@@ -393,18 +393,27 @@ with st.expander("⏱ Game Timer", expanded=False):
     """, height=230)
 
 with st.expander("Manual Swaps"):
-    blocks = ["H1 0-10m", "H1 10-15m", "H1 15-20m", "H1 20-25m", "H2 0-10m", "H2 10-15m", "H2 15-20m", "H2 20-25m"]
     col1, col2, col3, col4 = st.columns(4)
-    with col1: q_swap = st.selectbox("Half", [1, 2])
-    with col2: b_swap = st.selectbox("Time Block", [1, 2, 3, 4])
-    with col3: p1 = st.selectbox("Player 1", attending, key="p1_7")
-    with col4: p2 = st.selectbox("Player 2", attending, key="p2")
-    
-    if st.button("Swap Players"):
-        st.session_state.manual_swaps_7v7.append({'q': q_swap, 'b': b_swap, 'p1': p1, 'p2': p2})
+    with col1: st.selectbox("Half", [1, 2], key="q_swap")
+    with col2: st.selectbox("Time Block", [1, 2, 3, 4], key="b_swap")
+    with col3: st.selectbox("Player 1", attending, key="p1_7")
+    with col4: st.selectbox("Player 2", attending, key="p2")
 
-    if st.button("Reset All Swaps"):
+    # Callbacks run before the script re-executes, so session state is updated
+    # before the sidebar renders — ensuring the download button captures the swap.
+    def add_swap_7v7():
+        st.session_state.manual_swaps_7v7.append({
+            'q': st.session_state.q_swap,
+            'b': st.session_state.b_swap,
+            'p1': st.session_state.p1_7,
+            'p2': st.session_state.p2
+        })
+
+    def reset_swaps_7v7():
         st.session_state.manual_swaps_7v7 = []
+
+    st.button("Swap Players", on_click=add_swap_7v7)
+    st.button("Reset All Swaps", on_click=reset_swaps_7v7)
 
 # Apply manual swaps
 for swap in st.session_state.manual_swaps_7v7:
