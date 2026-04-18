@@ -130,6 +130,10 @@ for p in roster:
     rank = st.sidebar.selectbox(f"Rank for {p}", options=rank_options, index=rank_idx, key=f"rank_{p}")
     player_ranks[p] = rank
 
+user_seed = st.sidebar.text_input("Seed (leave blank for random)", "")
+current_seed = int(user_seed) if user_seed.isdigit() else st.session_state.seed
+random.seed(current_seed)
+
 # --- SAVE CONFIG BUTTON ---
 config_to_save = {"team_name": team_name, "opponent": opponent, "formation_choice": formation_choice, "roster_raw": roster_raw, "attending": attending}
 for p in roster: config_to_save[f"rank_{p}"] = player_ranks[p]
@@ -139,14 +143,12 @@ for i in range(1, 3):
     config_to_save[f"s{i}b"] = st.session_state[f"s{i}b"]
     config_to_save[f"syn{i}a"] = st.session_state[f"syn{i}a"]
     config_to_save[f"syn{i}b"] = st.session_state[f"syn{i}b"]
+config_to_save["seed"] = current_seed
+config_to_save["user_seed"] = str(current_seed)
+config_to_save["manual_swaps_7v7"] = st.session_state.get('manual_swaps_7v7', [])
 
-st.sidebar.download_button("Download Current Config", data=json.dumps(config_to_save, indent=4), 
+st.sidebar.download_button("Download Current Config", data=json.dumps(config_to_save, indent=4),
                            file_name=f"{team_name}_config.json", mime="application/json")
-
-user_seed = st.sidebar.text_input("Seed (leave blank for random)", "")
-
-current_seed = int(user_seed) if user_seed.isdigit() else st.session_state.seed
-random.seed(current_seed)
 
 @st.cache_data
 def generate_rotation(attending, quarterly_gks, player_ranks, split_pairs, synergy_pairs, formation_key, seed):
