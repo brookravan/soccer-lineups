@@ -158,6 +158,9 @@ def generate_rotation(attending, quarterly_gks, player_ranks, split_pairs, syner
     con_bench_mins = {p: 0 for p in attending}
     total_mins = {p: 0 for p in attending}
     
+    # Tracks which slot types (0=DEF, 1=MID, 2=FWD) each player has been assigned so far
+    positions_played = {p: set() for p in attending}
+
     for i, duration in enumerate(durations):
         gk = quarterly_gks[i // 2]
         is_half_end = i in [3, 7] # Blocks 3 and 7 are the final 5 mins of halves
@@ -211,12 +214,16 @@ def generate_rotation(attending, quarterly_gks, player_ranks, split_pairs, syner
             for p in candidates:
                 if p not in selected and len(selected) < 6: selected.append(p)
 
-        assigned = assign_positions(selected, player_ranks, formation_key, FORMATION_CONFIGS)
+        assigned = assign_positions(selected, player_ranks, formation_key, FORMATION_CONFIGS, positions_played)
         assigned['GK'] = gk
         active = set(selected) | {gk}
         assigned['Bench'] = sorted([p for p in attending if p not in active])
         lineups.append(assigned)
-
+        # Update position variety tracking for field players
+        for slot in FORMATION_CONFIGS[formation_key]['slots']:
+            p = assigned[slot]
+            if p:
+                positions_played[p].add(FORMATION_CONFIGS[formation_key]['slot_types'][slot])
         for p in attending:
             if p in active:
                 con_active_mins[p] += duration

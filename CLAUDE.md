@@ -23,7 +23,7 @@ This is a mostly complete Python project that generates youth soccer lineups for
 ## Game structure
 
 **5v5 format**
-- 4 quarters of 10 minutes each
+- 4 quarters of 12 minutes each
 - Each quarter is split into 2 substitution periods
 - Results in 8 substitution periods per game
 - Goalkeepers play one full quarter each

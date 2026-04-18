@@ -18,8 +18,13 @@ import io
 # Note: original versions read FORMATION_CONFIGS from module scope.
 # formation_configs is now an explicit parameter so this function is
 # format-agnostic and requires no globals.
-def assign_positions(players, ranks, formation_key, formation_configs):
-    """Assign players to formation slots based on position preference rankings."""
+def assign_positions(players, ranks, formation_key, formation_configs, positions_played=None):
+    """Assign players to formation slots based on position preference rankings.
+
+    positions_played: optional dict of player -> set of slot-type indices (0=DEF, 1=MID, 2=FWD)
+    already played this game. When provided, players who haven't yet played a slot's type are
+    preferred within each preference level to encourage position variety across the game.
+    """
     f_cfg = formation_configs[formation_key]
     slots, slot_types = f_cfg['slots'], f_cfg['slot_types']
     assignment = {s: None for s in slots}
@@ -29,11 +34,20 @@ def assign_positions(players, ranks, formation_key, formation_configs):
         for slot in slots:
             if assignment[slot] is None:
                 idx = slot_types[slot]
-                for p in rem_players:
-                    if p in ranks and ranks[p][idx] == level:
-                        assignment[slot] = p
-                        rem_players.remove(p)
-                        break
+                # Prefer players who haven't played this slot type yet (position variety)
+                if positions_played:
+                    for p in rem_players:
+                        if p in ranks and ranks[p][idx] == level and idx not in positions_played.get(p, set()):
+                            assignment[slot] = p
+                            rem_players.remove(p)
+                            break
+                # Fall back to any player at this preference level
+                if assignment[slot] is None:
+                    for p in rem_players:
+                        if p in ranks and ranks[p][idx] == level:
+                            assignment[slot] = p
+                            rem_players.remove(p)
+                            break
     for slot in slots:
         if assignment[slot] is None and rem_players:
             assignment[slot] = rem_players.pop(0)
