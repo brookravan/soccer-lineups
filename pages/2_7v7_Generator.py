@@ -145,10 +145,7 @@ for i in range(1, 3):
     config_to_save[f"syn{i}b"] = st.session_state[f"syn{i}b"]
 config_to_save["seed"] = current_seed
 config_to_save["user_seed"] = str(current_seed)
-config_to_save["manual_swaps_7v7"] = st.session_state.get('manual_swaps_7v7', [])
-
-st.sidebar.download_button("Download Current Config", data=json.dumps(config_to_save, indent=4),
-                           file_name=f"{team_name}_config.json", mime="application/json")
+# manual_swaps_7v7 is added at download time (main body) so it captures the current run's swaps
 
 @st.cache_data
 def generate_rotation(attending, quarterly_gks, player_ranks, split_pairs, synergy_pairs, formation_key, seed):
@@ -394,26 +391,16 @@ with st.expander("⏱ Game Timer", expanded=False):
 
 with st.expander("Manual Swaps"):
     col1, col2, col3, col4 = st.columns(4)
-    with col1: st.selectbox("Half", [1, 2], key="q_swap")
-    with col2: st.selectbox("Time Block", [1, 2, 3, 4], key="b_swap")
-    with col3: st.selectbox("Player 1", attending, key="p1_7")
-    with col4: st.selectbox("Player 2", attending, key="p2")
+    with col1: q_swap = st.selectbox("Half", [1, 2])
+    with col2: b_swap = st.selectbox("Time Block", [1, 2, 3, 4])
+    with col3: p1 = st.selectbox("Player 1", attending, key="p1_7")
+    with col4: p2 = st.selectbox("Player 2", attending, key="p2")
 
-    # Callbacks run before the script re-executes, so session state is updated
-    # before the sidebar renders — ensuring the download button captures the swap.
-    def add_swap_7v7():
-        st.session_state.manual_swaps_7v7.append({
-            'q': st.session_state.q_swap,
-            'b': st.session_state.b_swap,
-            'p1': st.session_state.p1_7,
-            'p2': st.session_state.p2
-        })
+    if st.button("Swap Players"):
+        st.session_state.manual_swaps_7v7.append({'q': q_swap, 'b': b_swap, 'p1': p1, 'p2': p2})
 
-    def reset_swaps_7v7():
+    if st.button("Reset All Swaps"):
         st.session_state.manual_swaps_7v7 = []
-
-    st.button("Swap Players", on_click=add_swap_7v7)
-    st.button("Reset All Swaps", on_click=reset_swaps_7v7)
 
 # Apply manual swaps
 for swap in st.session_state.manual_swaps_7v7:
@@ -482,6 +469,12 @@ with tab2:
         file_name=f"{team_name}_{opponent}_Single.jpg",
         mime="image/jpeg"
     )
+
+st.divider()
+# Download button placed here (after swap section) so it captures swaps added in this run
+config_to_save["manual_swaps_7v7"] = st.session_state.get('manual_swaps_7v7', [])
+st.download_button("Download Current Config", data=json.dumps(config_to_save, indent=4),
+                   file_name=f"{team_name}_config.json", mime="application/json")
 
 st.divider()
 st.subheader("Player Minutes Summary")
