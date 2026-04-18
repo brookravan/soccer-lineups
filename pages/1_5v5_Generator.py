@@ -128,10 +128,7 @@ for i in range(1, 3):
     config_to_save[f"syn{i}b"] = st.session_state[f"syn{i}b"]
 config_to_save["seed"] = current_seed
 config_to_save["user_seed"] = str(current_seed)
-config_to_save["manual_swaps_5v5"] = st.session_state.get('manual_swaps_5v5', [])
-
-st.sidebar.download_button("Download Current Config", data=json.dumps(config_to_save, indent=4),
-                           file_name=f"{team_name}_config.json", mime="application/json")
+# manual_swaps_5v5 is added at download time (main body) so it captures the current run's swaps
 
 @st.cache_data
 def generate_rotation(attending, quarterly_gks, player_ranks, split_pairs, synergy_pairs, formation_key, seed):
@@ -376,7 +373,7 @@ with st.expander("Manual Swaps"):
     with col2: b_swap = st.selectbox("Block", [1,2])
     with col3: p1 = st.selectbox("Player 1", attending, key="p1")
     with col4: p2 = st.selectbox("Player 2", attending, key="p2")
-    
+
     if st.button("Swap Players"):
         st.session_state.manual_swaps_5v5.append({'q': q_swap, 'b': b_swap, 'p1': p1, 'p2': p2})
 
@@ -447,6 +444,12 @@ with tab2:
         file_name=f"{team_name}_{opponent}_Single.jpg",
         mime="image/jpeg"
     )
+
+st.divider()
+# Download button placed here (after swap section) so it captures swaps added in this run
+config_to_save["manual_swaps_5v5"] = st.session_state.get('manual_swaps_5v5', [])
+st.download_button("Download Current Config", data=json.dumps(config_to_save, indent=4),
+                   file_name=f"{team_name}_config.json", mime="application/json")
 
 st.divider()
 st.subheader("Player Participation Summary")
